@@ -1,0 +1,15 @@
+GITURL="git://github.com/swig/swig"
+
+prepare() {
+	true
+}
+
+build() {
+	./autogen.sh
+	./configure --prefix=/
+	make
+}
+
+install() {
+	make install
+}

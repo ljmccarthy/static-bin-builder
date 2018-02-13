@@ -35,7 +35,7 @@ checkout_tag() {
 build_failed() {
 	rm -rf "$SRCDIR"
 	rm -rf "$DESTDIR"
-	echo "$NAME $TAG failed to build."
+	echo "Failed to build $NAME $TAG."
 	exit 1
 }
 
@@ -44,9 +44,13 @@ prepare() {
 }
 
 build() {
-	test -f autogen.sh && ./autogen.sh
-	test -f configure && ./configure --prefix=/
-	make
+	if [ -f autogen.sh ]; then
+		./autogen.sh || return $?
+	fi
+	if [ -f configure ]; then
+		./configure --prefix=/ || return $?
+	fi
+	make || return $?
 }
 
 install() {
@@ -55,20 +59,18 @@ install() {
 
 do_build() {
 	echo "Building $NAME $TAG"
-	prepare
+	prepare || return $?
 
-	cd "$SRCDIR"
 	export MAKEFLAGS="-j 4"
 	export CC="$BUILDER_ROOTDIR/musl-clang"
 	export CFLAGS="-Os -fomit-frame-pointer"
 	export CXXFLAGS="$CFLAGS"
 	export LDFLAGS="-static -Wl,--strip-all -Wl,--gc-sections"
-	build
+	(cd "$SRCDIR" && build) || return $?
 
 	rm -rf "$DESTDIR"
 	mkdir -p "$DESTDIR"
-	cd "$SRCDIR"
-	install
+	(cd "$SRCDIR" && install) || return $?
 
 	rm -rf "$SRCDIR"
 }

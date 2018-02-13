@@ -76,7 +76,7 @@ do_build() {
 }
 
 cd "$BUILDER_ROOTDIR/packages/$NAME"
-source build
+. ./build
 checkout_repo
 checkout_tag || build_failed
 do_build || build_failed

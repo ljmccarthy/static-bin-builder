@@ -17,6 +17,8 @@ TAG="$2"
 DESTDIR="$BUILDER_ROOTDIR/out/$NAME-$TAG"
 GITDIR="$BUILDER_ROOTDIR/repo/$NAME.git"
 
+export DESTDIR
+
 checkout_repo() {
 	if [ -d "$GITDIR" ]; then
 		git --git-dir="$GITDIR" fetch origin '+refs/heads/*:refs/heads/*' --prune
@@ -39,7 +41,6 @@ build_failed() {
 
 do_build() {
 	echo "Building $NAME $TAG"
-
 	prepare
 
 	cd "$SRCDIR"
@@ -50,6 +51,7 @@ do_build() {
 	export LDFLAGS="-static -Wl,--strip-all -Wl,--gc-sections"
 	build
 
+	rm -rf "$DESTDIR"
 	mkdir -p "$DESTDIR"
 	cd "$SRCDIR"
 	install

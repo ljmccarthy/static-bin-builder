@@ -11,10 +11,10 @@ test -n "$1" || usage
 test -n "$2" || usage
 test -z "$3" || usage
 
-BUILDER_ROOTDIR="$(realpath $(dirname "$0"))"
+BUILDER_ROOTDIR="$(realpath "$(dirname "$0")")"
 NAME="$1"
 TAG="$2"
-DESTDIR="$BUILDER_ROOTDIR/out/$NAME-$TAG"
+DESTDIR="${DESTDIR:-"$BUILDER_ROOTDIR/out/$NAME-$TAG"}"
 GITDIR="$BUILDER_ROOTDIR/repo/$NAME.git"
 
 export DESTDIR

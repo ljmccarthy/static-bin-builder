@@ -1,0 +1,30 @@
+#!/bin/sh
+
+usage() {
+	echo "usage: $0 DISTRONAME"
+	exit 1
+}
+
+test -n "$1" || usage
+test -z "$2" || usage
+
+DISTRO="$1"
+BUILDER_ROOTDIR="$(realpath "$(dirname "$0")")"
+DISTRODIR="$BUILDER_ROOTDIR/distro-build/$DISTRO"
+
+cd "$BUILDER_ROOTDIR"
+if [ ! -f "distros/$DISTRO" ]; then
+	echo "unknown distro: '$DISTRO'"
+	exit 1
+fi
+
+build_failed() {
+	echo "Failed to build distro '$DISTRO'."
+	exit 1
+}
+
+while read NAME TAG; do
+	DESTDIR="$DISTRODIR/$NAME-$TAG" ./build-package $NAME $TAG || build_failed
+done < "distros/$DISTRO"
+
+echo "Distro '$DISTRO' built successfully."

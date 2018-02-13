@@ -8,8 +8,7 @@
 # See LICENSE file for copyright and license details.
 #
 
-PREFIX=${MUSL_PREFIX:-"/usr/x86_64-alpine-linux-musl"}
-#PREFIX=${MUSL_PREFIX:-"/usr"}
+PREFIX=${MUSL_PREFIX:-"/usr"}
 if [ ! -d "${PREFIX}" ]; then
 	echo "invalid prefix: ${PREFIX}"
 	return 1

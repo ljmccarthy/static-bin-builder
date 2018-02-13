@@ -1,0 +1,66 @@
+#!/bin/sh
+
+set -e
+
+usage() {
+	echo "usage: $0 NAME TAG"
+	exit 1
+}
+
+test -n "$1" || usage
+test -n "$2" || usage
+test -z "$3" || usage
+
+BUILDER_ROOTDIR="$(realpath $(dirname "$0"))"
+NAME="$1"
+TAG="$2"
+DESTDIR="$BUILDER_ROOTDIR/out/$NAME-$TAG"
+GITDIR="$BUILDER_ROOTDIR/repo/$NAME.git"
+
+checkout_repo() {
+	if [ -d "$GITDIR" ]; then
+		git --git-dir="$GITDIR" fetch origin '+refs/heads/*:refs/heads/*' --prune
+	else
+		git clone --bare "$GITURL" "$GITDIR"
+	fi
+}
+
+checkout_tag() {
+	SRCDIR=`mktemp -d -t "busybox-$TAG.XXXXXX"`
+	git --git-dir="$GITDIR" archive --format=tar "$TAG" | tar -xf - -C "$SRCDIR"
+}
+
+build_failed() {
+	rm -rf "$SRCDIR"
+	rm -rf "$DESTDIR"
+	echo "$NAME $TAG failed to build."
+	exit 1
+}
+
+do_build() {
+	echo "Building $NAME $TAG"
+
+	prepare
+
+	cd "$SRCDIR"
+	export MAKEFLAGS="-j 4"
+	export CC="$BUILDER_ROOTDIR/musl-clang"
+	export CFLAGS="-Os -fomit-frame-pointer"
+	export CXXFLAGS="$CFLAGS"
+	export LDFLAGS="-static -Wl,--strip-all -Wl,--gc-sections"
+	build
+
+	mkdir -p "$DESTDIR"
+	cd "$SRCDIR"
+	install
+
+	rm -rf "$SRCDIR"
+}
+
+cd "$BUILDER_ROOTDIR/packages/$NAME"
+source build
+checkout_repo
+checkout_tag || build_failed
+do_build || build_failed
+
+echo "$NAME $TAG built successfully."

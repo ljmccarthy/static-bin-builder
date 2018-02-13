@@ -1,0 +1,16 @@
+#!/bin/sh
+
+GITURL="git://git.busybox.net/busybox"
+
+prepare() {
+	cp -a config "$SRCDIR/.config"
+}
+
+build() {
+	make
+}
+
+install() {
+	ln -s "$DESTDIR" _install
+	make install
+}

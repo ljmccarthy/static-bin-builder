@@ -1,5 +1,3 @@
-#!/bin/sh
-
 GITURL="git://git.busybox.net/busybox"
 
 prepare() {

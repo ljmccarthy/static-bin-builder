@@ -26,7 +26,7 @@ checkout_repo() {
 }
 
 checkout_tag() {
-	SRCDIR=`mktemp -d -t "busybox-$TAG.XXXXXX"`
+	SRCDIR=`mktemp -d -t "$NAME-$TAG.XXXXXX"`
 	git --git-dir="$GITDIR" archive --format=tar "$TAG" | tar -xf - -C "$SRCDIR"
 }
 

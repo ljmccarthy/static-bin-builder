@@ -1,15 +1,1 @@
 GITURL="git://github.com/ggreer/the_silver_searcher"
-
-prepare() {
-	true
-}
-
-build() {
-	./autogen.sh
-	./configure --prefix=/
-	make
-}
-
-install() {
-	make install
-}

@@ -39,6 +39,20 @@ build_failed() {
 	exit 1
 }
 
+prepare() {
+	true
+}
+
+build() {
+	test -f autogen.sh && ./autogen.sh
+	test -f configure && ./configure --prefix=/
+	make
+}
+
+install() {
+	make install
+}
+
 do_build() {
 	echo "Building $NAME $TAG"
 	prepare

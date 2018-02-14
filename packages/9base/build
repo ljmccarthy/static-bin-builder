@@ -1,7 +1,7 @@
 GITURL="git://git.suckless.org/9base"
 
 prepare() {
-	cat <<EOF >>"$SRCDIR/config.mk"
+	cat >> "$SRCDIR/config.mk" <<EOF
 PREFIX = ${PREFIX}
 MANPREFIX = ${PREFIX}share/man
 CC = ${CC}

@@ -1,1 +1,7 @@
 GITURL="git://github.com/hishamhm/htop"
+
+build() {
+	./autogen.sh || return $?
+	./configure --prefix=/ || return $?
+	make htop_LDFLAGS="$LDFLAGS" || return $?
+}

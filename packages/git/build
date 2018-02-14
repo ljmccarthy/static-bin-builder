@@ -1,0 +1,14 @@
+GITURL="https://github.com/git/git"
+
+prepare() {
+	cat >> "$SRCDIR/config.mak" <<EOF
+prefix = ${PREFIX}
+CFLAGS = ${CFLAGS}
+NO_GETTEXT = YesPlease
+NO_SVN_TESTS = YesPlease
+NO_REGEX = YesPlease
+USE_LIBPCRE2 = YesPlease
+NO_NSEC = YesPlease
+NO_SYS_POLL_H = 1
+EOF
+}

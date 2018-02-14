@@ -11,13 +11,19 @@ test -n "$1" || usage
 test -n "$2" || usage
 test -z "$3" || usage
 
-BUILDER_ROOTDIR="$(realpath "$(dirname "$0")")"
 NAME="$1"
 TAG="$2"
-DESTDIR="${DESTDIR:-"$BUILDER_ROOTDIR/out/$NAME-$TAG"}"
+BUILDER_ROOTDIR="$(realpath "$(dirname "$0")")"
 GITDIR="$BUILDER_ROOTDIR/repo/$NAME.git"
 
-export DESTDIR
+export DESTDIR="${DESTDIR:-"$BUILDER_ROOTDIR/out/$NAME-$TAG"}"
+export PREFIX="${PREFIX:-"/"}"
+export MAKEFLAGS="-j 4"
+export CC="$BUILDER_ROOTDIR/musl-clang"
+export CFLAGS="-Os -fomit-frame-pointer"
+export CXXFLAGS="$CFLAGS"
+export CPPFLAGS="$CFLAGS"
+export LDFLAGS="-static -Wl,--strip-all -Wl,--gc-sections"
 
 checkout_repo() {
 	if [ -d "$GITDIR" ]; then
@@ -60,18 +66,10 @@ install() {
 do_build() {
 	echo "Building $NAME $TAG"
 	prepare || return $?
-
-	export MAKEFLAGS="-j 4"
-	export CC="$BUILDER_ROOTDIR/musl-clang"
-	export CFLAGS="-Os -fomit-frame-pointer"
-	export CXXFLAGS="$CFLAGS"
-	export LDFLAGS="-static -Wl,--strip-all -Wl,--gc-sections"
 	(cd "$SRCDIR" && build) || return $?
-
-	rm -rf "$DESTDIR"
-	mkdir -p "$DESTDIR"
+	rm -rf "$DESTDIR" || return $?
+	mkdir -p "$DESTDIR" || return $?
 	(cd "$SRCDIR" && install) || return $?
-
 	rm -rf "$SRCDIR"
 }
 

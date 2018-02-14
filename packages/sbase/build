@@ -1,0 +1,12 @@
+GITURL="git://git.suckless.org/sbase"
+
+prepare() {
+	cat <<EOF >>"$SRCDIR/config.mk"
+PREFIX = ${PREFIX}
+MANPREFIX = ${PREFIX}share/man
+CC = ${CC}
+CFLAGS += ${CFLAGS}
+CPPFLAGS += ${CPPFLAGS}
+LDFLAGS += ${LDFLAGS}
+EOF
+}

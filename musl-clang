@@ -42,6 +42,9 @@ TAIL=""
 
 if hasNo '-nostdinc' "$@"; then
 	ARGS="${ARGS} -isystem ${PREFIX}/include"
+	if [ "${CPP}" = "yes" ]; then
+		ARGS="${ARGS} -I ${PREFIX}/include/c++/v1"
+	fi
 fi
 
 if \
